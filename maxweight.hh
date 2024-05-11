@@ -262,18 +262,44 @@ return filteredFood;
 // run out of food items, or run out of space.
 std::unique_ptr<FoodVector> dynamic_max_weight
 (
-	const FoodVector& foods,
-	double total_calories
+    const FoodVector& foods,
+    double total_calories
 )
-{	
-	std::unique_ptr<FoodVector> source(new FoodVector(foods));
-	std::unique_ptr<FoodVector> best(new FoodVector);
-	// print_food_vector(*todo);
-    
-    // TODO: implement this function, then delete the return statement below
-	
+{
+    // Initialize a table to store the maximum weight achievable
+    // Table[row][col] represents the maximum weight with the first row items and col calories
+    std::vector<std::vector<double>> dp(foods.size() + 1, std::vector<double>(total_calories + 1, 0.0));
 
-    
+    // Iterate through each food item
+    for (size_t i = 1; i <= foods.size(); ++i) {
+        const FoodItem* item = foods[i - 1].get(); // Get the current food item
+
+        // Iterate through each possible calorie limit
+        for (int j = 0; j <= total_calories; ++j) {
+            // Check if including the current item is beneficial
+            if (item->calorie() <= j) {
+                // Update the table based on whether including the item increases the weight
+                dp[i][j] = std::max(dp[i - 1][j], dp[i - 1][j - item->calorie()] + item->weight());
+            } else {
+                // If the item cannot fit in the calorie limit, use the previous value
+                dp[i][j] = dp[i - 1][j];
+            }
+        }
+    }
+
+    // Now, backtrack to find the chosen food items
+    std::unique_ptr<FoodVector> result(new FoodVector);
+    int remainingCalories = total_calories;
+
+    for (int i = foods.size(); i > 0 && remainingCalories > 0; --i) {
+        if (dp[i][remainingCalories] != dp[i - 1][remainingCalories]) {
+            result->push_back(foods[i - 1]);
+            remainingCalories -= foods[i - 1]->calorie();
+        }
+    }
+
+    return result;
+
 }
 
 
