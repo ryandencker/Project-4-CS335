@@ -2,5 +2,6 @@
 # Project 4 - Dynamic vs. Exhaustive
 Calorie-Limited Weight-Maximization Problem
 
-Group members:
+Group members: Ryan Dencker - dencker@csu.fullerton.edu
+               Hieu Nguyen - hieunguy02@csu.fullerton.edu
 
